@@ -16,9 +16,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./interfaces/IWhitelistedTokensale.sol";
 import "./interfaces/ITokensaleRegistry.sol";
+import "@galtproject/libs/contracts/traits/OwnableAndInitializable.sol";
 
 
-contract Administrated is Ownable {
+contract Administrated is OwnableAndInitializable {
     EnumerableSet.AddressSet public admins;
 
     modifier onlyAdmin() {
@@ -26,7 +27,6 @@ contract Administrated is Ownable {
         _;
     }
     constructor() public {
-        admins.add(msg.sender);
     }
 
     function addAdmin(address _admin) onlyOwner external {

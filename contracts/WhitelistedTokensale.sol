@@ -40,7 +40,10 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
 
   mapping(address => TokenInfo) public tokenInfo;
 
-  constructor(address _tokenToSell, address _tokensaleRegistry) public {
+  constructor() public {
+  }
+
+  function initialize(address _tokenToSell, address _tokensaleRegistry) public isInitializer {
     tokenToSell = IERC20(_tokenToSell);
     tokensaleRegistry = ITokensaleRegistry(_tokensaleRegistry);
   }
