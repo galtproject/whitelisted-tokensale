@@ -23,8 +23,7 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
-  EnumerableSet.AddressSet internal customersWhiteList;
-  EnumerableSet.AddressSet internal tokens;
+  EnumerableSet.AddressSet internal customerTokens;
 
   IERC20 public tokenToSell;
   ITokensaleRegistry public tokensaleRegistry;
@@ -61,22 +60,22 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
     emit SetWallet(_wallet, msg.sender);
   }
 
-  function addToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
-    tokens.add(_token);
+  function addCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
+    customerTokens.add(_token);
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
-    emit AddToken(_token, _rateMul, _rateDiv, msg.sender);
+    emit AddCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
-  function updateToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
+  function updateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
-    emit UpdateToken(_token, _rateMul, _rateDiv, msg.sender);
+    emit UpdateCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
-  function removeToken(address _token) onlyAdmin external {
-    tokens.remove(_token);
-    emit RemoveToken(_token, msg.sender);
+  function removeCustomerToken(address _token) onlyAdmin external {
+    customerTokens.remove(_token);
+    emit RemoveCustomerToken(_token, msg.sender);
   }
 
   function buyTokens(IERC20 _customerToken, address _customerAddress, uint256 _weiAmount) external {
@@ -100,6 +99,14 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
   }
 
   function isTokenAvailable(address _customerToken) public view returns (bool) {
-    return tokens.contains(_customerToken);
+    return customerTokens.contains(_customerToken);
+  }
+
+  function getCustomerTokenList() external view returns(address[] memory) {
+    return customerTokens.enumerate();
+  }
+
+  function getCustomerTokenCount() external view returns(uint256) {
+    return customerTokens.length();
   }
 }

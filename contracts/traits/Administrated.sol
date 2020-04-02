@@ -41,4 +41,12 @@ contract Administrated is OwnableAndInitializable {
     function isAdmin(address _admin) public view returns (bool) {
         return admins.contains(_admin);
     }
+
+    function getAdminList() external view returns(address[] memory) {
+        return admins.enumerate();
+    }
+
+    function getAdminCount() external view returns(uint256) {
+        return admins.length();
+    }
 }

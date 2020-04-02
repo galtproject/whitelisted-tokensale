@@ -44,4 +44,12 @@ contract Managered is Administrated {
     function isManager(address _manager) public view returns (bool) {
         return managers.contains(_manager);
     }
+
+    function getManagerList() external view returns(address[] memory) {
+        return managers.enumerate();
+    }
+
+    function getManagerCount() external view returns(uint256) {
+        return managers.length();
+    }
 }

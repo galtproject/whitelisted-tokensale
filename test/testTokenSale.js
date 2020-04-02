@@ -39,10 +39,10 @@ describe('WhitelistedTokensale', () => {
 
     await this.tokenSale.setWallet(wallet, {from: owner});
 
-    await this.tokenSale.addToken(this.daiToken.address, '1', '1', {from: owner});
-    await this.tokenSale.addToken(this.daiToken.address, '1', '1', {from: owner});
-    await this.tokenSale.addToken(this.tusdToken.address, '1', '2', {from: owner});
-    await this.tokenSale.addToken(this.xchfToken.address, '2', '1', {from: owner});
+    await this.tokenSale.addCustomerToken(this.daiToken.address, '1', '1', {from: owner});
+    await this.tokenSale.addCustomerToken(this.daiToken.address, '1', '1', {from: owner});
+    await this.tokenSale.addCustomerToken(this.tusdToken.address, '1', '2', {from: owner});
+    await this.tokenSale.addCustomerToken(this.xchfToken.address, '2', '1', {from: owner});
   });
 
   describe('buyTokens', () => {

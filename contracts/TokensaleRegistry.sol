@@ -40,4 +40,12 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
   function validateWhitelistedCustomer(address _customer) external {
     require(customersWhiteList.contains(_customer), "TokensaleRegistry: Recipient is not in whitelist");
   }
+
+  function getCustomersWhiteList() external view returns(address[] memory) {
+    return customersWhiteList.enumerate();
+  }
+
+  function getCustomersWhiteListCount() external view returns(uint256) {
+    return customersWhiteList.length();
+  }
 }
