@@ -43,40 +43,55 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
   constructor() public {
   }
 
-  function initialize(address _tokenToSell, address _tokensaleRegistry) public isInitializer {
+  function initialize(address _owner, address _tokenToSell, address _tokensaleRegistry)
+    public
+    initializeWithOwner(_owner)
+  {
     tokenToSell = IERC20(_tokenToSell);
     tokensaleRegistry = ITokensaleRegistry(_tokensaleRegistry);
   }
 
   function setTokensaleRegistry(ITokensaleRegistry _tokensaleRegistry) onlyAdmin external {
     tokensaleRegistry = _tokensaleRegistry;
+    emit SetTokensaleRegistry(address(_tokensaleRegistry), msg.sender);
+  }
+
+  function setWallet(address _wallet) onlyAdmin external {
+    wallet = _wallet;
+    emit SetWallet(_wallet, msg.sender);
   }
 
   function addToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
     tokens.add(_token);
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
+    emit AddToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
   function updateToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
+    emit UpdateToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
   function removeToken(address _token) onlyAdmin external {
     tokens.remove(_token);
+    emit RemoveToken(_token, msg.sender);
   }
 
   function buyTokens(IERC20 _customerToken, address _customerAddress, uint256 _weiAmount) external {
+    require(wallet != address(0), "WhitelistedTokensale: wallet is null");
     require(isTokenAvailable(address(_customerToken)), "WhitelistedTokensale: _customerToken is not available");
 
     tokensaleRegistry.validateWhitelistedCustomer(_customerAddress);
 
     uint256 _resultTokenAmount = getTokenAmount(address(_customerToken), _weiAmount);
 
-    _customerToken.safeTransferFrom(_customerAddress, wallet, _weiAmount);
+    _customerToken.safeTransferFrom(msg.sender, wallet, _weiAmount);
 
     tokenToSell.safeTransfer(_customerAddress, _resultTokenAmount);
+
+    emit BuyTokens(msg.sender, _customerAddress, address(_customerToken), _weiAmount, _resultTokenAmount);
   }
 
   function getTokenAmount(address _customerToken, uint256 _weiAmount) public view returns (uint256) {

@@ -13,6 +13,10 @@ import "./Administrated.sol";
 
 
 contract Managered is Administrated {
+
+    event AddManager(address indexed manager, address indexed admin);
+    event RemoveManager(address indexed manager, address indexed admin);
+
     using EnumerableSet for EnumerableSet.AddressSet;
 
     EnumerableSet.AddressSet internal managers;
@@ -29,10 +33,12 @@ contract Managered is Administrated {
 
     function addManager(address _manager) onlyAdmin external {
         managers.add(_manager);
+        emit AddManager(_manager, msg.sender);
     }
 
     function removeManager(address _manager) onlyAdmin external {
         managers.remove(_manager);
+        emit RemoveManager(_manager, msg.sender);
     }
 
     function isManager(address _manager) public view returns (bool) {

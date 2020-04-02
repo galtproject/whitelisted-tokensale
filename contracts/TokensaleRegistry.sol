@@ -19,12 +19,18 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
 
   EnumerableSet.AddressSet internal customersWhiteList;
 
+  function initialize(address _owner) external initializeWithOwner(_owner) {
+
+  }
+
   function addCustomerToWhiteList(address _customer) onlyAdminOrManager external {
     customersWhiteList.add(_customer);
+    emit AddWhitelistedCustomer(_customer, msg.sender);
   }
 
   function removeCustomerFromWhiteList(address _customer) onlyAdminOrManager external {
     customersWhiteList.remove(_customer);
+    emit AddWhitelistedCustomer(_customer, msg.sender);
   }
 
   function isCustomerInWhiteList(address _customer) external returns(bool) {
@@ -32,6 +38,6 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
   }
 
   function validateWhitelistedCustomer(address _customer) external {
-    require(customersWhiteList.contains(_customer), "TokensaleRegistry: Msg sender is not in whitelist");
+    require(customersWhiteList.contains(_customer), "TokensaleRegistry: Recipient is not in whitelist");
   }
 }

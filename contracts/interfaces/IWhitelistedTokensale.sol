@@ -11,9 +11,10 @@ pragma solidity ^0.5.13;
 
 
 interface IWhitelistedTokensale {
-    event AddWhitelistedCustomer(address indexed customer);
-    event RemoveWhitelistedCustomer(address indexed customer);
-
-    event AddManager(address indexed manager);
-    event RemoveManager(address indexed manager);
+    event SetTokensaleRegistry(address indexed tokensaleRegistry, address indexed admin);
+    event SetWallet(address indexed wallet, address indexed admin);
+    event AddToken(address indexed token, uint256 _rateMul, uint256 _rateDiv, address indexed admin);
+    event UpdateToken(address indexed token, uint256 _rateMul, uint256 _rateDiv, address indexed admin);
+    event RemoveToken(address indexed token, address indexed admin);
+    event BuyTokens(address indexed spender, address indexed customer, address indexed token, uint256 tokenAmount, uint256 resultAmount);
 }

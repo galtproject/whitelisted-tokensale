@@ -19,6 +19,8 @@ import "../WhitelistedTokensale.sol";
 
 
 contract WhitelistedTokensaleFactory is Ownable {
+    event Build(address result);
+
     address public implementation;
     IOwnedUpgradeabilityProxyFactory internal ownedUpgradeabilityProxyFactory;
 
@@ -33,16 +35,20 @@ contract WhitelistedTokensaleFactory is Ownable {
         proxy.upgradeToAndCall(
             implementation,
             abi.encodeWithSignature(
-                "initialize(address,address)",
+                "initialize(address,address,address)",
+                address(this),
                 _tokenToSell,
                 _tokensaleRegistry
             )
         );
 
-        proxy.transferProxyOwnership(msg.sender);
-
         WhitelistedTokensale tokensale = WhitelistedTokensale(address(proxy));
         tokensale.addAdmin(msg.sender);
+
+        proxy.transferProxyOwnership(msg.sender);
+        tokensale.transferOwnership(msg.sender);
+
+        emit Build(address(proxy));
 
         return tokensale;
     }

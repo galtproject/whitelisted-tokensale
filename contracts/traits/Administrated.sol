@@ -16,6 +16,9 @@ import "@galtproject/libs/contracts/traits/OwnableAndInitializable.sol";
 contract Administrated is OwnableAndInitializable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    event AddAdmin(address indexed admin);
+    event RemoveAdmin(address indexed admin);
+
     EnumerableSet.AddressSet internal admins;
 
     modifier onlyAdmin() {
@@ -27,10 +30,12 @@ contract Administrated is OwnableAndInitializable {
 
     function addAdmin(address _admin) onlyOwner external {
         admins.add(_admin);
+        emit AddAdmin(_admin);
     }
 
     function removeAdmin(address _admin) onlyOwner external {
         admins.remove(_admin);
+        emit RemoveAdmin(_admin);
     }
 
     function isAdmin(address _admin) public view returns (bool) {

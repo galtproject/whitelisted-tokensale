@@ -11,8 +11,8 @@ pragma solidity ^0.5.13;
 
 
 interface ITokensaleRegistry {
-    event AddWhitelistedCustomer(address indexed customer);
-    event RemoveWhitelistedCustomer(address indexed customer);
+    event AddWhitelistedCustomer(address indexed customer, address indexed manager);
+    event RemoveWhitelistedCustomer(address indexed customer, address indexed manager);
 
     function validateWhitelistedCustomer(address _customer) external;
 }

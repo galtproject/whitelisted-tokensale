@@ -19,6 +19,8 @@ import "../TokensaleRegistry.sol";
 
 
 contract TokensaleRegistryFactory is Ownable {
+    event Build(address result);
+
     address public implementation;
     IOwnedUpgradeabilityProxyFactory internal ownedUpgradeabilityProxyFactory;
 
@@ -32,13 +34,16 @@ contract TokensaleRegistryFactory is Ownable {
 
         proxy.upgradeToAndCall(
             implementation,
-            abi.encodeWithSignature("initialize()")
+            abi.encodeWithSignature("initialize(address)", address(this))
         );
-
-        proxy.transferProxyOwnership(msg.sender);
 
         TokensaleRegistry tokensaleRegistry = TokensaleRegistry(address(proxy));
         tokensaleRegistry.addAdmin(msg.sender);
+
+        proxy.transferProxyOwnership(msg.sender);
+        tokensaleRegistry.transferOwnership(msg.sender);
+
+        emit Build(address(proxy));
 
         return tokensaleRegistry;
     }
