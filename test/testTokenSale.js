@@ -114,6 +114,11 @@ describe('WhitelistedTokensale', () => {
     });
 
     it('pause should work properly', async function () {
+      await assertRevert(
+        this.tokenSale.pause({from: dan}),
+        'Administrated: Msg sender is not admin'
+      );
+
       await this.tokenSale.pause({from: owner});
 
       await this.tokenSaleRegistry.addCustomerToWhiteList(bob, {from: owner});
