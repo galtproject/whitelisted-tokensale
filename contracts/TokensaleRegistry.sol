@@ -17,7 +17,7 @@ import "./traits/Managered.sol";
 contract TokensaleRegistry is Managered, ITokensaleRegistry {
   using EnumerableSet for EnumerableSet.AddressSet;
 
-  EnumerableSet.AddressSet public customersWhiteList;
+  EnumerableSet.AddressSet internal customersWhiteList;
 
   function addCustomerToWhiteList(address _customer) onlyAdminOrManager external {
     customersWhiteList.add(_customer);
@@ -33,6 +33,5 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
 
   function validateWhitelistedCustomer(address _customer) external {
     require(customersWhiteList.contains(_customer), "TokensaleRegistry: Msg sender is not in whitelist");
-    _;
   }
 }

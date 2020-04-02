@@ -13,7 +13,9 @@ import "./Administrated.sol";
 
 
 contract Managered is Administrated {
-    EnumerableSet.AddressSet public managers;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    EnumerableSet.AddressSet internal managers;
 
     modifier onlyAdminOrManager() {
         require(isAdmin(msg.sender) || isManager(msg.sender), "Managered: Msg sender is not admin or manager");
@@ -34,6 +36,6 @@ contract Managered is Administrated {
     }
 
     function isManager(address _manager) public view returns (bool) {
-        return managers.contains.remove(_manager);
+        return managers.contains(_manager);
     }
 }

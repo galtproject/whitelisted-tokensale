@@ -9,18 +9,14 @@
 
 pragma solidity ^0.5.13;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./interfaces/IWhitelistedTokensale.sol";
-import "./interfaces/ITokensaleRegistry.sol";
 import "@galtproject/libs/contracts/traits/OwnableAndInitializable.sol";
 
 
 contract Administrated is OwnableAndInitializable {
-    EnumerableSet.AddressSet public admins;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    EnumerableSet.AddressSet internal admins;
 
     modifier onlyAdmin() {
         require(isAdmin(msg.sender), "WhitelistedTokensale: Msg sender is not admin");
@@ -38,6 +34,6 @@ contract Administrated is OwnableAndInitializable {
     }
 
     function isAdmin(address _admin) public view returns (bool) {
-        return admins.contains.remove(_admin);
+        return admins.contains(_admin);
     }
 }

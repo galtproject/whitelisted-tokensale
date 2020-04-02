@@ -23,8 +23,8 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
-  EnumerableSet.AddressSet public customersWhiteList;
-  EnumerableSet.AddressSet public tokens;
+  EnumerableSet.AddressSet internal customersWhiteList;
+  EnumerableSet.AddressSet internal tokens;
 
   IERC20 public tokenToSell;
   ITokensaleRegistry public tokensaleRegistry;
@@ -52,13 +52,13 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
     tokensaleRegistry = _tokensaleRegistry;
   }
 
-  function addToken(address _token, uint256 rateMul, uint256 rateDiv) onlyAdmin external {
+  function addToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
     tokens.add(_token);
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
   }
 
-  function updateToken(address _token, uint256 rateMul, uint256 rateDiv) onlyAdmin external {
+  function updateToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
     tokenInfo[_token].rateMul = _rateMul;
     tokenInfo[_token].rateDiv = _rateDiv;
   }

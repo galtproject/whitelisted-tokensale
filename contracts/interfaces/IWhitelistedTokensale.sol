@@ -9,8 +9,6 @@
 
 pragma solidity ^0.5.13;
 
-import "@galtproject/core/contracts/interfaces/IACL.sol";
-
 
 interface IWhitelistedTokensale {
     event AddWhitelistedCustomer(address indexed customer);
