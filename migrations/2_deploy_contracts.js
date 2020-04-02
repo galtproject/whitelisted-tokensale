@@ -21,20 +21,24 @@ module.exports = function(deployer, network, accounts) {
 
     const {tokensaleRegistry, tokensale} = await deployWhitelistedTokensale(mainToken.address, accounts[0]);
 
-    await mainToken.mint(tokensale.address, web3Utils.toWei((10 ** 6).toString(), 'ether'));
+    await Promise.all([
+      mainToken.mint(tokensale.address, web3Utils.toWei((10 ** 6).toString(), 'ether')),
+      tokensaleRegistry.addAdmin(owner),
+      tokensale.addAdmin(owner),
+      tokensale.setWallet(wallet),
+      tokensale.addCustomerToken(testStableToken1.address, '1', '1'),
+      tokensale.addCustomerToken(testStableToken2.address, '1', '1')
+    ]);
 
-    await tokensaleRegistry.addAdmin(owner);
-    await tokensale.addAdmin(owner);
-    await tokensale.setWallet(wallet);
-    await tokensale.addCustomerToken(testStableToken1.address, '1', '1');
-    await tokensale.addCustomerToken(testStableToken2.address, '1', '1');
+    await Promise.all([
+      tokensaleRegistry.removeAdmin(accounts[0]),
+      tokensale.removeAdmin(accounts[0])
+    ]);
 
-    await tokensaleRegistry.removeAdmin(accounts[0]);
-    await tokensale.removeAdmin(accounts[0]);
-
-    await pIteration.forEachSeries([mainToken, testStableToken1, testStableToken2, tokensale, tokensaleRegistry], (contract) =>{
-      return contract.transferOwnership(owner);
-    });
+    await Promise.all([
+      tokensaleRegistry.transferOwnership(owner),
+      tokensale.transferOwnership(owner)
+    ]);
 
     const contractsData = {
       mainTokenAddress: mainToken.address,
@@ -46,6 +50,11 @@ module.exports = function(deployer, network, accounts) {
       tokensaleRegistryAbi: tokensaleRegistry.abi
     };
 
-    fs.writeFileSync(path.join(__dirname, 'deployed', network + '.json'), JSON.stringify(contractsData, null, 2));
+    const deployDirectory = `${__dirname}/../deployed`;
+    if (!fs.existsSync(deployDirectory)) {
+      fs.mkdirSync(deployDirectory);
+    }
+
+    fs.writeFileSync(path.join(deployDirectory, network + '.json'), JSON.stringify(contractsData, null, 2));
   });
 };
