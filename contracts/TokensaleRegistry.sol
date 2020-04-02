@@ -33,11 +33,11 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
     emit AddWhitelistedCustomer(_customer, msg.sender);
   }
 
-  function isCustomerInWhiteList(address _customer) external returns(bool) {
+  function isCustomerInWhiteList(address _customer) external view returns(bool) {
     return customersWhiteList.contains(_customer);
   }
 
-  function validateWhitelistedCustomer(address _customer) external {
+  function validateWhitelistedCustomer(address _customer) external view {
     require(customersWhiteList.contains(_customer), "TokensaleRegistry: Recipient is not in whitelist");
   }
 

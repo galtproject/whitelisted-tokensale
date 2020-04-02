@@ -24,6 +24,11 @@ deploy:
 	-npm run deploy
 	-tput bel
 
+deploy-kovan:
+	make compile
+	DEPLOYMENT_KEY=0xf9351ad000adeb0b7de92d97c4e6d324f61a8e9d33524e80e6ef0b3cfa7f936c ./node_modules/.bin/truffle migrate -s ASSERTIONS=1 --network kovan --reset
+	tput bel
+
 coverage:
 	-npm run coverage
 	-tput bel

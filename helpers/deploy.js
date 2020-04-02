@@ -1,31 +1,33 @@
-const { contract, web3 } = require('@openzeppelin/test-environment');
-const { assert } = require('chai');
+const { contract, web3: ozWeb3 } = require('@openzeppelin/test-environment');
 
-const OwnedUpgradeabilityProxyFactory = contract.fromArtifact('OwnedUpgradeabilityProxyFactory');
-const WhitelistedTokensaleFactory = contract.fromArtifact('WhitelistedTokensaleFactory');
-const TokensaleRegistryFactory = contract.fromArtifact('TokensaleRegistryFactory');
-const WhitelistedTokensale = contract.fromArtifact('WhitelistedTokensale');
-const TokensaleRegistry = contract.fromArtifact('TokensaleRegistry');
+module.exports = function (artifacts) {
+  const getContract = artifacts ? artifacts.require.bind(artifacts) : contract.fromArtifact.bind(contract);
 
-WhitelistedTokensale.numberFormat = 'String';
+  const OwnedUpgradeabilityProxyFactory = getContract('OwnedUpgradeabilityProxyFactory');
+  const WhitelistedTokensaleFactory = getContract('WhitelistedTokensaleFactory');
+  const TokensaleRegistryFactory = getContract('TokensaleRegistryFactory');
+  const WhitelistedTokensale = getContract('WhitelistedTokensale');
+  const TokensaleRegistry = getContract('TokensaleRegistry');
 
-const { getEventArg } = require('@galtproject/solidity-test-chest')(web3);
+  const web3 = artifacts ? TokensaleRegistry.web3 : ozWeb3;
+  const { getEventArg } = require('@galtproject/solidity-test-chest')(web3);
 
-async function deployWhitelistedTokensale(_tokenToSell, from) {
-  const proxyFactory = await OwnedUpgradeabilityProxyFactory.new({from});
-  const tokensaleImpl = await WhitelistedTokensale.new({from});
-  const tokensaleRegistryImpl = await TokensaleRegistry.new({from});
+  WhitelistedTokensale.numberFormat = 'String';
 
-  const tokensaleFactory = await WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from});
-  const tokensaleRegistryFactory = await TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from});
+  return {
+    async deployWhitelistedTokensale(_tokenToSell, from) {
+      const proxyFactory = await OwnedUpgradeabilityProxyFactory.new({from});
+      const tokensaleImpl = await WhitelistedTokensale.new({from});
+      const tokensaleRegistryImpl = await TokensaleRegistry.new({from});
 
-  let res = await tokensaleRegistryFactory.build({from});
-  const tokensaleRegistry = await TokensaleRegistry.at(getEventArg(res, 'Build', 'result'));
-  res = await tokensaleFactory.build(_tokenToSell, tokensaleRegistry.address, {from});
-  const tokensale = await WhitelistedTokensale.at(getEventArg(res, 'Build', 'result'))
-  return {tokensaleRegistry, tokensale};
-}
+      const tokensaleFactory = await WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from});
+      const tokensaleRegistryFactory = await TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from});
 
-module.exports = {
-  deployWhitelistedTokensale
+      let res = await tokensaleRegistryFactory.build({from});
+      const tokensaleRegistry = await TokensaleRegistry.at(getEventArg(res, 'Build', 'result'));
+      res = await tokensaleFactory.build(_tokenToSell, tokensaleRegistry.address, {from});
+      const tokensale = await WhitelistedTokensale.at(getEventArg(res, 'Build', 'result'))
+      return {tokensaleRegistry, tokensale};
+    }
+  }
 };

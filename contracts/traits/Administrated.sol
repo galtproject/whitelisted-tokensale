@@ -22,7 +22,7 @@ contract Administrated is OwnableAndInitializable {
     EnumerableSet.AddressSet internal admins;
 
     modifier onlyAdmin() {
-        require(isAdmin(msg.sender), "WhitelistedTokensale: Msg sender is not admin");
+        require(isAdmin(msg.sender), "Administrated: Msg sender is not admin");
         _;
     }
     constructor() public {

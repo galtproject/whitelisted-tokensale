@@ -16,9 +16,10 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./interfaces/IWhitelistedTokensale.sol";
 import "./interfaces/ITokensaleRegistry.sol";
 import "./traits/Administrated.sol";
+import "./traits/Pausable.sol";
 
 
-contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
+contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
@@ -78,7 +79,7 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
     emit RemoveCustomerToken(_token, msg.sender);
   }
 
-  function buyTokens(IERC20 _customerToken, address _customerAddress, uint256 _weiAmount) external {
+  function buyTokens(IERC20 _customerToken, address _customerAddress, uint256 _weiAmount) external whenNotPaused {
     require(wallet != address(0), "WhitelistedTokensale: wallet is null");
     require(isTokenAvailable(address(_customerToken)), "WhitelistedTokensale: _customerToken is not available");
 

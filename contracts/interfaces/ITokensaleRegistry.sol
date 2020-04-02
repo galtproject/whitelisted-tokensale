@@ -14,5 +14,5 @@ interface ITokensaleRegistry {
     event AddWhitelistedCustomer(address indexed customer, address indexed manager);
     event RemoveWhitelistedCustomer(address indexed customer, address indexed manager);
 
-    function validateWhitelistedCustomer(address _customer) external;
+    function validateWhitelistedCustomer(address _customer) external view;
 }
