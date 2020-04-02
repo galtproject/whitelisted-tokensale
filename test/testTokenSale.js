@@ -33,6 +33,8 @@ describe('WhitelistedTokensale', () => {
     this.tokenSaleRegistry = tokensaleRegistry;
     this.tokenSale = tokensale;
 
+    console.log('owner', await tokensaleRegistry.owner());
+    await this.tokenSale.addToken(this.daiToken.address, '1', '1', {from: owner});
     await this.tokenSale.addToken(this.daiToken.address, '1', '1', {from: owner});
     await this.tokenSale.addToken(this.tusdToken.address, '1', '2', {from: owner});
     await this.tokenSale.addToken(this.xchfToken.address, '2', '1', {from: owner});

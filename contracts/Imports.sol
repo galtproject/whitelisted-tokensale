@@ -15,6 +15,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol";
 
 // Libs
 import "@galtproject/libs/contracts/proxy/unstructured-storage/OwnedUpgradeabilityProxy.sol";
+import "@galtproject/libs/contracts/proxy/unstructured-storage/factories/OwnedUpgradeabilityProxyFactory.sol";
 
 // solium-disable-next-line no-empty-blocks
 contract Imports {
