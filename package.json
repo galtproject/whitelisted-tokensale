@@ -1,0 +1,39 @@
+{
+  "name": "@galtproject/whitelisted-crowdsale",
+  "version": "1.0.0",
+  "description": "Bootstrap for Truffle/Solidity projects",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "@galtproject/eslint-config-galt": "^1.1.0",
+    "@galtproject/solidity-test-chest": "https://github.com/galtproject/solidity-test-chest#605d332",
+    "@galtproject/libs": "git+ssh://git@github.com/galtproject/galtproject-libs.git#c99391e",
+    "@openzeppelin/contracts": "2.5.0",
+    "@openzeppelin/test-environment": "^0.1.2",
+    "chai": "^4.2.0",
+    "cli-table": "^0.3.1",
+    "ethlint": "1.2.5",
+    "ganache-core": "2.8.0",
+    "lodash": "^4.17.15",
+    "mocha": "^7.0.1",
+    "solidity-coverage": "^0.6.7",
+    "truffle": "5.1.2",
+    "web3": "1.2.4"
+  },
+  "engines": {
+    "node": "^10.15.3"
+  },
+  "repository": "https://github.com/galtproject/whitelisted-crowdsale",
+  "scripts": {
+    "test": "mocha --exit --recursive test --timeout 10000",
+    "compile": "truffle compile",
+    "deploy": "truffle migrate --network local",
+    "coverage": "SOLIDITY_COVERAGE=yes solidity-coverage",
+    "eslint": "eslint .",
+    "eslint-fix": "eslint . --fix",
+    "ethlint": "solium --dir ."
+  },
+  "author": "",
+  "license": "MIT"
+}
