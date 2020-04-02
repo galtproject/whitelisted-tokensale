@@ -15,10 +15,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./interfaces/IWhitelistedTokensale.sol";
 import "./interfaces/ITokensaleRegistry.sol";
-import "./traits/Administered.sol";
+import "./traits/Administrated.sol";
 
 
-contract WhitelistedTokensale is Administered, IWhitelistedTokensale {
+contract WhitelistedTokensale is Administrated, IWhitelistedTokensale {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SafeERC20 for IERC20;
   using SafeMath for uint256;

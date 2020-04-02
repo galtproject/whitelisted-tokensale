@@ -18,7 +18,7 @@ import "./interfaces/IWhitelistedTokensale.sol";
 import "./interfaces/ITokensaleRegistry.sol";
 
 
-contract Administered is Ownable {
+contract Administrated is Ownable {
     EnumerableSet.AddressSet public admins;
 
     modifier onlyAdmin() {

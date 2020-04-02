@@ -9,10 +9,10 @@
 
 pragma solidity ^0.5.13;
 
-import "./Administered.sol";
+import "./Administrated.sol";
 
 
-contract Managered is Administered {
+contract Managered is Administrated {
     EnumerableSet.AddressSet public managers;
 
     modifier onlyAdminOrManager() {
