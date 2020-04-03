@@ -20,7 +20,7 @@ Smart contracts have Administrators and Managers roles. These roles are designed
 
 :construction: **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) stage: :tada:Ethereum Mainnet:tada:**
 
-At the moment, **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale)** contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited.
+At the moment, **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited.
 
 ## Usage
 
