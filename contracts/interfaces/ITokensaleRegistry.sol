@@ -10,7 +10,7 @@
 pragma solidity ^0.5.13;
 
 
-interface ITokensaleRegistry {
+interface ITokenSaleRegistry {
     event AddWhitelistedCustomer(address indexed customer, address indexed manager);
     event RemoveWhitelistedCustomer(address indexed customer, address indexed manager);
 

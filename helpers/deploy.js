@@ -4,37 +4,37 @@ module.exports = function (artifacts) {
   const getContract = artifacts ? artifacts.require.bind(artifacts) : contract.fromArtifact.bind(contract);
 
   const OwnedUpgradeabilityProxyFactory = getContract('OwnedUpgradeabilityProxyFactory');
-  const WhitelistedTokensaleFactory = getContract('WhitelistedTokensaleFactory');
-  const TokensaleRegistryFactory = getContract('TokensaleRegistryFactory');
-  const WhitelistedTokensale = getContract('WhitelistedTokensale');
-  const TokensaleRegistry = getContract('TokensaleRegistry');
+  const WhitelistedTokenSaleFactory = getContract('WhitelistedTokenSaleFactory');
+  const TokenSaleRegistryFactory = getContract('TokenSaleRegistryFactory');
+  const WhitelistedTokenSale = getContract('WhitelistedTokenSale');
+  const TokenSaleRegistry = getContract('TokenSaleRegistry');
 
-  const web3 = artifacts ? TokensaleRegistry.web3 : ozWeb3;
+  const web3 = artifacts ? TokenSaleRegistry.web3 : ozWeb3;
   const { getEventArg } = require('@galtproject/solidity-test-chest')(web3);
 
-  WhitelistedTokensale.numberFormat = 'String';
+  WhitelistedTokenSale.numberFormat = 'String';
 
   return {
-    async deployWhitelistedTokensale(_tokenToSell, from) {
-      const [proxyFactory, tokensaleImpl, tokensaleRegistryImpl] = await Promise.all([
+    async deployWhitelistedTokenSale(_tokenToSell, from) {
+      const [proxyFactory, tokenSaleImpl, tokenSaleRegistryImpl] = await Promise.all([
         OwnedUpgradeabilityProxyFactory.new({from}),
-        WhitelistedTokensale.new({from}),
-        TokensaleRegistry.new({from})
+        WhitelistedTokenSale.new({from}),
+        TokenSaleRegistry.new({from})
       ]);
       await Promise.all([
-        tokensaleImpl.initialize(from, from, from),
-        tokensaleRegistryImpl.initialize(from)
+        tokenSaleImpl.initialize(from, from, from),
+        tokenSaleRegistryImpl.initialize(from)
       ]);
-      const [tokensaleFactory, tokensaleRegistryFactory] = await Promise.all([
-        WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from}),
-        TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from})
+      const [tokenSaleFactory, tokenSaleRegistryFactory] = await Promise.all([
+        WhitelistedTokenSaleFactory.new(proxyFactory.address, tokenSaleImpl.address, {from}),
+        TokenSaleRegistryFactory.new(proxyFactory.address, tokenSaleRegistryImpl.address, {from})
       ]);
 
-      let res = await tokensaleRegistryFactory.build({from});
-      const tokensaleRegistry = await TokensaleRegistry.at(getEventArg(res, 'Build', 'result'));
-      res = await tokensaleFactory.build(_tokenToSell, tokensaleRegistry.address, {from});
-      const tokensale = await WhitelistedTokensale.at(getEventArg(res, 'Build', 'result'))
-      return {tokensaleRegistry, tokensale};
+      let res = await tokenSaleRegistryFactory.build({from});
+      const tokenSaleRegistry = await TokenSaleRegistry.at(getEventArg(res, 'Build', 'result'));
+      res = await tokenSaleFactory.build(_tokenToSell, tokenSaleRegistry.address, {from});
+      const tokenSale = await WhitelistedTokenSale.at(getEventArg(res, 'Build', 'result'))
+      return {tokenSaleRegistry, tokenSale};
     }
   }
 };

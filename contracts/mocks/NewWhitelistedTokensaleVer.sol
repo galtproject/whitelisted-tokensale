@@ -9,10 +9,10 @@
 
 pragma solidity ^0.5.13;
 
-import "../WhitelistedTokensale.sol";
+import "../WhitelistedTokenSale.sol";
 
 
-contract NewWhitelistedTokensaleVer is WhitelistedTokensale {
+contract NewWhitelistedTokenSaleVer is WhitelistedTokenSale {
 
     string public bar;
 

@@ -4,7 +4,7 @@ const web3Utils = require('web3-utils');
 const fs = require('fs');
 const path = require('path');
 
-const { deployWhitelistedTokensale } = require('../helpers/deploy')(artifacts);
+const { deployWhitelistedTokenSale } = require('../helpers/deploy')(artifacts);
 
 module.exports = function(deployer, network, accounts) {
 
@@ -19,35 +19,35 @@ module.exports = function(deployer, network, accounts) {
     await testStableToken1.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
     await testStableToken2.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
 
-    const {tokensaleRegistry, tokensale} = await deployWhitelistedTokensale(mainToken.address, accounts[0]);
+    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(mainToken.address, accounts[0]);
 
     await Promise.all([
-      mainToken.mint(tokensale.address, web3Utils.toWei((10 ** 6).toString(), 'ether')),
-      tokensaleRegistry.addAdmin(owner),
-      tokensale.addAdmin(owner),
-      tokensale.setWallet(wallet),
-      tokensale.addCustomerToken(testStableToken1.address, '1', '1'),
-      tokensale.addCustomerToken(testStableToken2.address, '1', '1')
+      mainToken.mint(tokenSale.address, web3Utils.toWei((10 ** 6).toString(), 'ether')),
+      tokenSaleRegistry.addAdmin(owner),
+      tokenSale.addAdmin(owner),
+      tokenSale.setWallet(wallet),
+      tokenSale.addOrUpdateCustomerToken(testStableToken1.address, '1', '1'),
+      tokenSale.addOrUpdateCustomerToken(testStableToken2.address, '1', '1')
     ]);
 
     await Promise.all([
-      tokensaleRegistry.removeAdmin(accounts[0]),
-      tokensale.removeAdmin(accounts[0])
+      tokenSaleRegistry.removeAdmin(accounts[0]),
+      tokenSale.removeAdmin(accounts[0])
     ]);
 
     await Promise.all([
-      tokensaleRegistry.transferOwnership(owner),
-      tokensale.transferOwnership(owner)
+      tokenSaleRegistry.transferOwnership(owner),
+      tokenSale.transferOwnership(owner)
     ]);
 
     const contractsData = {
       mainTokenAddress: mainToken.address,
       testStableToken1Address: testStableToken1.address,
       testStableToken2Address: testStableToken2.address,
-      tokensaleAddress: tokensale.address,
-      tokensaleAbi: tokensale.abi,
-      tokensaleRegistryAddress: tokensaleRegistry.address,
-      tokensaleRegistryAbi: tokensaleRegistry.abi
+      tokenSaleAddress: tokenSale.address,
+      tokenSaleAbi: tokenSale.abi,
+      tokenSaleRegistryAddress: tokenSaleRegistry.address,
+      tokenSaleRegistryAbi: tokenSaleRegistry.abi
     };
 
     const deployDirectory = `${__dirname}/../deployed`;
