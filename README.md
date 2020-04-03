@@ -25,7 +25,7 @@ Smart contracts have Administrators and Managers roles. These roles are designed
 
 * `make cleanup` - remove solidity build artifacts
 * `make compile` - compile solidity files, executes `make cleanup` before compilation
-* `make ftest` - run tests
+* `make test` - run tests
 * `make lint` - run solidity and javascript linters
 
 For more information check out `Makefile`
