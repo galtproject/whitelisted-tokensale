@@ -9,6 +9,10 @@ Smart contracts have Administrators and Managers roles. These roles are designed
 - set a wallet where tokens received from the sale will be sent;
 - pause tokens sale if necessary.
 
+:construction: **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) stage: :tada:Ethereum Mainnet:tada:**
+
+:bomb: **Security review status: At the moment, [@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited.**
+
 ## Features
 - many Tokensale can use one Registry smart contract to check customers to be in whitelist;
 - rates settings with possibility to define 1/1, 2/1, 1/2 or any other value;
@@ -16,11 +20,6 @@ Smart contracts have Administrators and Managers roles. These roles are designed
 - admins and Managers roles for parameter management of Tokensale and Registry;
 - ability to pause Tokensale by admins;
 - simple and flexible onchain customers and tokens lists logic by using EnumerableSet by OpenZeppelin.
-
-
-:construction: **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) stage: :tada:Ethereum Mainnet:tada:**
-
-:bomb: **Security review status: At the moment, [@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited.**
 
 ## Usage
 
