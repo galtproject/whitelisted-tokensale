@@ -33,7 +33,7 @@
     "coverage": "SOLIDITY_COVERAGE=yes solidity-coverage",
     "eslint": "eslint .",
     "eslint-fix": "eslint . --fix",
-    "ethlint": "solium --dir ."
+    "ethlint": "solium --dir contracts"
   },
   "author": "",
   "license": "MIT",

@@ -20,6 +20,9 @@ module.exports = function (artifacts) {
       const tokensaleImpl = await WhitelistedTokensale.new({from});
       const tokensaleRegistryImpl = await TokensaleRegistry.new({from});
 
+      await tokensaleImpl.initialize(from, from, from);
+      await tokensaleRegistryImpl.initialize(from);
+
       const tokensaleFactory = await WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from});
       const tokensaleRegistryFactory = await TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from});
 
