@@ -38,7 +38,7 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
     uint256 totalSold;
   }
 
-  mapping(address => TokenInfo) public tokenInfo;
+  mapping(address => TokenInfo) public customerTokenInfo;
 
   constructor() public {
   }
@@ -62,15 +62,17 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
   }
 
   function addCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
+    require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokensale: incorrect rate");
     customerTokens.add(_token);
-    tokenInfo[_token].rateMul = _rateMul;
-    tokenInfo[_token].rateDiv = _rateDiv;
+    customerTokenInfo[_token].rateMul = _rateMul;
+    customerTokenInfo[_token].rateDiv = _rateDiv;
     emit AddCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
   function updateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
-    tokenInfo[_token].rateMul = _rateMul;
-    tokenInfo[_token].rateDiv = _rateDiv;
+    require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokensale: incorrect rate");
+    customerTokenInfo[_token].rateMul = _rateMul;
+    customerTokenInfo[_token].rateDiv = _rateDiv;
     emit UpdateCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
@@ -87,6 +89,10 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
 
     uint256 _resultTokenAmount = getTokenAmount(address(_customerToken), _weiAmount);
 
+    TokenInfo storage _tokenInfo = customerTokenInfo[address(_customerToken)];
+    _tokenInfo.totalReceived = _tokenInfo.totalReceived.add(_weiAmount);
+    _tokenInfo.totalSold = _tokenInfo.totalSold.add(_resultTokenAmount);
+
     _customerToken.safeTransferFrom(msg.sender, wallet, _weiAmount);
 
     tokenToSell.safeTransfer(_customerAddress, _resultTokenAmount);
@@ -95,7 +101,7 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
   }
 
   function getTokenAmount(address _customerToken, uint256 _weiAmount) public view returns (uint256) {
-    TokenInfo storage _tokenInfo = tokenInfo[_customerToken];
+    TokenInfo storage _tokenInfo = customerTokenInfo[_customerToken];
     return _weiAmount.mul(_tokenInfo.rateMul).div(_tokenInfo.rateDiv);
   }
 

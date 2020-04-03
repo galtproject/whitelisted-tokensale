@@ -16,12 +16,19 @@ module.exports = function (artifacts) {
 
   return {
     async deployWhitelistedTokensale(_tokenToSell, from) {
-      const proxyFactory = await OwnedUpgradeabilityProxyFactory.new({from});
-      const tokensaleImpl = await WhitelistedTokensale.new({from});
-      const tokensaleRegistryImpl = await TokensaleRegistry.new({from});
-
-      const tokensaleFactory = await WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from});
-      const tokensaleRegistryFactory = await TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from});
+      const [proxyFactory, tokensaleImpl, tokensaleRegistryImpl] = await Promise.all([
+        OwnedUpgradeabilityProxyFactory.new({from}),
+        WhitelistedTokensale.new({from}),
+        TokensaleRegistry.new({from})
+      ]);
+      await Promise.all([
+        tokensaleImpl.initialize(from, from, from),
+        tokensaleRegistryImpl.initialize(from)
+      ]);
+      const [tokensaleFactory, tokensaleRegistryFactory] = await Promise.all([
+        WhitelistedTokensaleFactory.new(proxyFactory.address, tokensaleImpl.address, {from}),
+        TokensaleRegistryFactory.new(proxyFactory.address, tokensaleRegistryImpl.address, {from})
+      ]);
 
       let res = await tokensaleRegistryFactory.build({from});
       const tokensaleRegistry = await TokensaleRegistry.at(getEventArg(res, 'Build', 'result'));
