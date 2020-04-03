@@ -1,6 +1,6 @@
-<h3 align="center">Whitelisted ERC20 TokenSale Contracts (@whitelisted-crowdsale)</h3><div align="center"></div>
+<h3 align="center">Whitelisted ERC20 TokenSale Contracts (@whitelisted-tokensale)</h3><div align="center"></div>
 
-[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) is a set of Ethereum smart contracts for the sale of ERC20 tokens for others ERC20 tokens with specific rates. 
+[@whitelisted-tokensale](https://github.com/galtproject/whitelisted-tokensale) is a set of Ethereum smart contracts for the sale of ERC20 tokens for others ERC20 tokens with specific rates. 
 
 Smart contracts have Administrators and Managers roles. These roles are designed to:
 - manage the whitelist of customers;
@@ -9,9 +9,9 @@ Smart contracts have Administrators and Managers roles. These roles are designed
 - set a wallet where tokens received from the sale will be sent;
 - pause tokens sale if necessary.
 
-:construction: **[@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) stage: :tada:Ethereum Mainnet:tada:**
+:construction: **[@whitelisted-tokensale](https://github.com/galtproject/whitelisted-tokensale) stage: :tada:Ethereum Mainnet:tada:**
 
-:bomb: **Security review status: At the moment, [@whitelisted-crowdsale](https://github.com/galtproject/whitelisted-crowdsale) contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited. Use it on your own risk!**
+:bomb: **Security review status: At the moment, [@whitelisted-tokensale](https://github.com/galtproject/whitelisted-tokensale) contracts are deployed on the Ethereum mainnet. Nonetheless it is still experimental software that has not yet been publicly audited. Use it on your own risk!**
 
 ## Features
 - many Tokensale can use one Registry smart contract to check customers to be in whitelist;
