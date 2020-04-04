@@ -12,7 +12,7 @@ pragma solidity ^0.5.13;
 import "./Administrated.sol";
 
 
-contract Managered is Administrated {
+contract Managed is Administrated {
 
     event AddManager(address indexed manager, address indexed admin);
     event RemoveManager(address indexed manager, address indexed admin);

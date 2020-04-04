@@ -10,11 +10,11 @@
 pragma solidity ^0.5.13;
 
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "./interfaces/ITokensaleRegistry.sol";
-import "./traits/Managered.sol";
+import "./interfaces/ITokenSaleRegistry.sol";
+import "./traits/Managed.sol";
 
 
-contract TokensaleRegistry is Managered, ITokensaleRegistry {
+contract TokenSaleRegistry is Managed, ITokenSaleRegistry {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   EnumerableSet.AddressSet internal customersWhiteList;
@@ -30,7 +30,7 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
 
   function removeCustomerFromWhiteList(address _customer) onlyAdminOrManager external {
     customersWhiteList.remove(_customer);
-    emit AddWhitelistedCustomer(_customer, msg.sender);
+    emit RemoveWhitelistedCustomer(_customer, msg.sender);
   }
 
   function isCustomerInWhiteList(address _customer) external view returns(bool) {
@@ -38,7 +38,7 @@ contract TokensaleRegistry is Managered, ITokensaleRegistry {
   }
 
   function validateWhitelistedCustomer(address _customer) external view {
-    require(customersWhiteList.contains(_customer), "TokensaleRegistry: Recipient is not in whitelist");
+    require(customersWhiteList.contains(_customer), "TokenSaleRegistry: Recipient is not in whitelist");
   }
 
   function getCustomersWhiteList() external view returns(address[] memory) {

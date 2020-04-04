@@ -15,10 +15,10 @@ import "@galtproject/libs/contracts/proxy/unstructured-storage/interfaces/IOwned
 import "@galtproject/libs/contracts/proxy/unstructured-storage/interfaces/IOwnedUpgradeabilityProxy.sol";
 
 // This contract will be included into the current one
-import "../TokensaleRegistry.sol";
+import "../TokenSaleRegistry.sol";
 
 
-contract TokensaleRegistryFactory is Ownable {
+contract TokenSaleRegistryFactory is Ownable {
     event Build(address result);
 
     address public implementation;
@@ -29,7 +29,7 @@ contract TokensaleRegistryFactory is Ownable {
         implementation = _impl;
     }
 
-    function build() external onlyOwner returns (TokensaleRegistry) {
+    function build() external onlyOwner returns (TokenSaleRegistry) {
         IOwnedUpgradeabilityProxy proxy = ownedUpgradeabilityProxyFactory.build();
 
         proxy.upgradeToAndCall(
@@ -37,14 +37,14 @@ contract TokensaleRegistryFactory is Ownable {
             abi.encodeWithSignature("initialize(address)", address(this))
         );
 
-        TokensaleRegistry tokensaleRegistry = TokensaleRegistry(address(proxy));
-        tokensaleRegistry.addAdmin(msg.sender);
+        TokenSaleRegistry tokenSaleRegistry = TokenSaleRegistry(address(proxy));
+        tokenSaleRegistry.addAdmin(msg.sender);
 
         proxy.transferProxyOwnership(msg.sender);
-        tokensaleRegistry.transferOwnership(msg.sender);
+        tokenSaleRegistry.transferOwnership(msg.sender);
 
         emit Build(address(proxy));
 
-        return tokensaleRegistry;
+        return tokenSaleRegistry;
     }
 }

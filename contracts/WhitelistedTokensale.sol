@@ -13,13 +13,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./interfaces/IWhitelistedTokensale.sol";
-import "./interfaces/ITokensaleRegistry.sol";
+import "./interfaces/IWhitelistedTokenSale.sol";
+import "./interfaces/ITokenSaleRegistry.sol";
 import "./traits/Administrated.sol";
 import "./traits/Pausable.sol";
 
 
-contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable {
+contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable {
   using EnumerableSet for EnumerableSet.AddressSet;
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
@@ -27,7 +27,7 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
   EnumerableSet.AddressSet internal customerTokens;
 
   IERC20 public tokenToSell;
-  ITokensaleRegistry public tokensaleRegistry;
+  ITokenSaleRegistry public tokenSaleRegistry;
 
   address public wallet;
 
@@ -43,17 +43,17 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
   constructor() public {
   }
 
-  function initialize(address _owner, address _tokenToSell, address _tokensaleRegistry)
+  function initialize(address _owner, address _tokenToSell, address _tokenSaleRegistry)
     public
     initializeWithOwner(_owner)
   {
     tokenToSell = IERC20(_tokenToSell);
-    tokensaleRegistry = ITokensaleRegistry(_tokensaleRegistry);
+    tokenSaleRegistry = ITokenSaleRegistry(_tokenSaleRegistry);
   }
 
-  function setTokensaleRegistry(ITokensaleRegistry _tokensaleRegistry) onlyAdmin external {
-    tokensaleRegistry = _tokensaleRegistry;
-    emit SetTokensaleRegistry(address(_tokensaleRegistry), msg.sender);
+  function setTokenSaleRegistry(ITokenSaleRegistry _tokenSaleRegistry) onlyAdmin external {
+    tokenSaleRegistry = _tokenSaleRegistry;
+    emit SetTokenSaleRegistry(address(_tokenSaleRegistry), msg.sender);
   }
 
   function setWallet(address _wallet) onlyAdmin external {
@@ -61,16 +61,9 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
     emit SetWallet(_wallet, msg.sender);
   }
 
-  function addCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
-    require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokensale: incorrect rate");
+  function addOrUpdateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
+    require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokenSale: incorrect rate");
     customerTokens.add(_token);
-    customerTokenInfo[_token].rateMul = _rateMul;
-    customerTokenInfo[_token].rateDiv = _rateDiv;
-    emit AddCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
-  }
-
-  function updateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
-    require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokensale: incorrect rate");
     customerTokenInfo[_token].rateMul = _rateMul;
     customerTokenInfo[_token].rateDiv = _rateDiv;
     emit UpdateCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
@@ -82,22 +75,24 @@ contract WhitelistedTokensale is Administrated, IWhitelistedTokensale, Pausable 
   }
 
   function buyTokens(IERC20 _customerToken, address _customerAddress, uint256 _weiAmount) external whenNotPaused {
-    require(wallet != address(0), "WhitelistedTokensale: wallet is null");
-    require(isTokenAvailable(address(_customerToken)), "WhitelistedTokensale: _customerToken is not available");
+    require(wallet != address(0), "WhitelistedTokenSale: wallet is null");
+    require(_weiAmount > 0, "WhitelistedTokenSale: weiAmount can't be null");
+    require(isTokenAvailable(address(_customerToken)), "WhitelistedTokenSale: _customerToken is not available");
 
-    tokensaleRegistry.validateWhitelistedCustomer(_customerAddress);
+    tokenSaleRegistry.validateWhitelistedCustomer(_customerAddress);
 
     uint256 _resultTokenAmount = getTokenAmount(address(_customerToken), _weiAmount);
+    require(_resultTokenAmount > 0, "WhitelistedTokenSale: _resultTokenAmount can't be null");
 
     TokenInfo storage _tokenInfo = customerTokenInfo[address(_customerToken)];
     _tokenInfo.totalReceived = _tokenInfo.totalReceived.add(_weiAmount);
     _tokenInfo.totalSold = _tokenInfo.totalSold.add(_resultTokenAmount);
 
+    emit BuyTokens(msg.sender, _customerAddress, address(_customerToken), _weiAmount, _resultTokenAmount);
+
     _customerToken.safeTransferFrom(msg.sender, wallet, _weiAmount);
 
     tokenToSell.safeTransfer(_customerAddress, _resultTokenAmount);
-
-    emit BuyTokens(msg.sender, _customerAddress, address(_customerToken), _weiAmount, _resultTokenAmount);
   }
 
   function getTokenAmount(address _customerToken, uint256 _weiAmount) public view returns (uint256) {

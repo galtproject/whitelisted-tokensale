@@ -9,10 +9,10 @@
 
 pragma solidity ^0.5.13;
 
-import "../TokensaleRegistry.sol";
+import "../TokenSaleRegistry.sol";
 
 
-contract NewTokensaleRegistryVer is TokensaleRegistry {
+contract NewTokenSaleRegistryVer is TokenSaleRegistry {
 
     string public registryBar;
 

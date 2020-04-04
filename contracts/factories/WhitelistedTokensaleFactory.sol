@@ -15,10 +15,10 @@ import "@galtproject/libs/contracts/proxy/unstructured-storage/interfaces/IOwned
 import "@galtproject/libs/contracts/proxy/unstructured-storage/interfaces/IOwnedUpgradeabilityProxy.sol";
 
 // This contract will be included into the current one
-import "../WhitelistedTokensale.sol";
+import "../WhitelistedTokenSale.sol";
 
 
-contract WhitelistedTokensaleFactory is Ownable {
+contract WhitelistedTokenSaleFactory is Ownable {
     event Build(address result);
 
     address public implementation;
@@ -29,7 +29,7 @@ contract WhitelistedTokensaleFactory is Ownable {
         implementation = _impl;
     }
 
-    function build(address _tokenToSell, address _tokensaleRegistry) external onlyOwner returns (WhitelistedTokensale) {
+    function build(address _tokenToSell, address _tokenSaleRegistry) external onlyOwner returns (WhitelistedTokenSale) {
         IOwnedUpgradeabilityProxy proxy = ownedUpgradeabilityProxyFactory.build();
 
         proxy.upgradeToAndCall(
@@ -38,18 +38,18 @@ contract WhitelistedTokensaleFactory is Ownable {
                 "initialize(address,address,address)",
                 address(this),
                 _tokenToSell,
-                _tokensaleRegistry
+                _tokenSaleRegistry
             )
         );
 
-        WhitelistedTokensale tokensale = WhitelistedTokensale(address(proxy));
-        tokensale.addAdmin(msg.sender);
+        WhitelistedTokenSale tokenSale = WhitelistedTokenSale(address(proxy));
+        tokenSale.addAdmin(msg.sender);
 
         proxy.transferProxyOwnership(msg.sender);
-        tokensale.transferOwnership(msg.sender);
+        tokenSale.transferOwnership(msg.sender);
 
         emit Build(address(proxy));
 
-        return tokensale;
+        return tokenSale;
     }
 }

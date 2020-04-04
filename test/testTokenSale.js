@@ -2,20 +2,20 @@ const {accounts, contract, web3} = require('@openzeppelin/test-environment');
 const {assert} = require('chai');
 
 const MintableErc20Token = contract.fromArtifact('ERC20Mintable');
-const NewTokensaleRegistryVer = contract.fromArtifact('NewTokensaleRegistryVer');
-const NewWhitelistedTokensaleVer = contract.fromArtifact('NewWhitelistedTokensaleVer');
+const NewTokenSaleRegistryVer = contract.fromArtifact('NewTokenSaleRegistryVer');
+const NewWhitelistedTokenSaleVer = contract.fromArtifact('NewWhitelistedTokenSaleVer');
 const OwnedUpgradeabilityProxy = contract.fromArtifact('OwnedUpgradeabilityProxy');
 
 const {ether, assertRevert} = require('@galtproject/solidity-test-chest')(web3);
 
-const {deployWhitelistedTokensale} = require('../helpers/deploy')();
+const {deployWhitelistedTokenSale} = require('../helpers/deploy')();
 
 MintableErc20Token.numberFormat = 'String';
 
 // const { utf8ToHex } = web3.utils;
 // const bytes32 = utf8ToHex;
 
-describe('WhitelistedTokensale', () => {
+describe('WhitelistedTokenSale', () => {
   const [owner, bob, charlie, dan, wallet, alice] = accounts;
 
   beforeEach(async function () {
@@ -34,17 +34,17 @@ describe('WhitelistedTokensale', () => {
     await this.xchfToken.mint(bob, ether(1000));
     await this.xchfToken.mint(dan, ether(1000));
 
-    const {tokensaleRegistry, tokensale} = await deployWhitelistedTokensale(this.mainToken.address, owner);
-    this.tokenSaleRegistry = tokensaleRegistry;
-    this.tokenSale = tokensale;
+    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(this.mainToken.address, owner);
+    this.tokenSaleRegistry = tokenSaleRegistry;
+    this.tokenSale = tokenSale;
 
     await this.mainToken.mint(this.tokenSale.address, ether(1000));
 
     await this.tokenSale.setWallet(wallet, {from: owner});
 
-    await this.tokenSale.addCustomerToken(this.daiToken.address, '1', '1', {from: owner});
-    await this.tokenSale.addCustomerToken(this.tusdToken.address, '1', '2', {from: owner});
-    await this.tokenSale.addCustomerToken(this.xchfToken.address, '2', '1', {from: owner});
+    await this.tokenSale.addOrUpdateCustomerToken(this.daiToken.address, '1', '1', {from: owner});
+    await this.tokenSale.addOrUpdateCustomerToken(this.tusdToken.address, '1', '2', {from: owner});
+    await this.tokenSale.addOrUpdateCustomerToken(this.xchfToken.address, '2', '1', {from: owner});
   });
 
   describe('initiate', () => {
@@ -67,6 +67,19 @@ describe('WhitelistedTokensale', () => {
       assert.equal(await this.tokenSale.getCustomerTokenCount(), '3');
       assert.equal(await this.tokenSale.isTokenAvailable(this.daiToken.address), true);
       assert.equal(await this.tokenSale.isTokenAvailable(dan), false);
+    });
+  });
+
+  describe('getTokenAmount', () => {
+    it('should return result token amount correctly', async function () {
+      assert.equal(await this.tokenSale.getTokenAmount(this.daiToken.address, '1'), '1');
+      assert.equal(await this.tokenSale.getTokenAmount(this.daiToken.address, '0'), '0');
+
+      assert.equal(await this.tokenSale.getTokenAmount(this.tusdToken.address, '1'), '0');
+      assert.equal(await this.tokenSale.getTokenAmount(this.tusdToken.address, '0'), '0');
+
+      assert.equal(await this.tokenSale.getTokenAmount(this.xchfToken.address, '1'), '2');
+      assert.equal(await this.tokenSale.getTokenAmount(this.xchfToken.address, '0'), '0');
     });
   });
 
@@ -199,6 +212,16 @@ describe('WhitelistedTokensale', () => {
       tokenInfo = await this.tokenSale.customerTokenInfo(this.tusdToken.address);
       assert.equal(tokenInfo.totalReceived, ether(42 + 10));
       assert.equal(tokenInfo.totalSold, ether(21 + 5));
+
+      await this.tusdToken.approve(this.tokenSale.address, '1', {from: bob});
+      await assertRevert(
+        this.tokenSale.buyTokens(this.tusdToken.address, bob, '0', {from: bob}),
+        'WhitelistedTokenSale: weiAmount can\'t be null'
+      );
+      await assertRevert(
+        this.tokenSale.buyTokens(this.tusdToken.address, bob, '1', {from: bob}),
+        'WhitelistedTokenSale: _resultTokenAmount can\'t be null'
+      );
     });
 
     it('should successfully buyTokens with rate 2/1', async function () {
@@ -219,12 +242,12 @@ describe('WhitelistedTokensale', () => {
       assert.equal(tokenInfo.totalSold, ether(84));
 
       await assertRevert(
-        this.tokenSale.updateCustomerToken(this.xchfToken.address, '4', '1', {from: bob}),
+        this.tokenSale.addOrUpdateCustomerToken(this.xchfToken.address, '4', '1', {from: bob}),
         'Administrated: Msg sender is not admin'
       );
 
       // update rates and by again
-      await this.tokenSale.updateCustomerToken(this.xchfToken.address, '4', '1', { from: owner });
+      await this.tokenSale.addOrUpdateCustomerToken(this.xchfToken.address, '4', '1', { from: owner });
 
       await this.xchfToken.approve(this.tokenSale.address, ether(10), {from: bob});
       await this.tokenSale.buyTokens(this.xchfToken.address, bob, ether(10), {from: bob});
@@ -262,7 +285,7 @@ describe('WhitelistedTokensale', () => {
 
       await assertRevert(
         this.tokenSale.buyTokens(this.daiToken.address, charlie, ether(42), {from: charlie}),
-        'TokensaleRegistry: Recipient is not in whitelist'
+        'TokenSaleRegistry: Recipient is not in whitelist'
       );
 
       await assertRevert(
@@ -279,52 +302,52 @@ describe('WhitelistedTokensale', () => {
 
       await assertRevert(
         this.tokenSale.buyTokens(this.daiToken.address, bob, ether(42), {from: charlie}),
-        'TokensaleRegistry: Recipient is not in whitelist'
+        'TokenSaleRegistry: Recipient is not in whitelist'
       );
     });
 
-    it('should correctly upgrade tokensale and registry', async function () {
+    it('should correctly upgrade tokenSale and registry', async function () {
       await this.tokenSaleRegistry.addManager(dan, {from: owner});
       await this.tokenSaleRegistry.addCustomerToWhiteList(bob, {from: owner});
 
-      const newTokensaleImpl = await NewWhitelistedTokensaleVer.new({from: owner});
-      const newTokensaleRegistryImpl = await NewTokensaleRegistryVer.new({from: owner});
+      const newTokenSaleImpl = await NewWhitelistedTokenSaleVer.new({from: owner});
+      const newTokenSaleRegistryImpl = await NewTokenSaleRegistryVer.new({from: owner});
 
-      await newTokensaleImpl.initialize(owner, owner, owner, {from: owner});
-      await newTokensaleRegistryImpl.initialize(owner, {from: owner});
+      await newTokenSaleImpl.initialize(owner, owner, owner, {from: owner});
+      await newTokenSaleRegistryImpl.initialize(owner, {from: owner});
 
       const tokenSaleToUpgrade = await OwnedUpgradeabilityProxy.at(this.tokenSale.address);
-      await tokenSaleToUpgrade.upgradeTo(newTokensaleImpl.address, {from: owner});
+      await tokenSaleToUpgrade.upgradeTo(newTokenSaleImpl.address, {from: owner});
 
       const tokenSaleRegistryToUpgrade = await OwnedUpgradeabilityProxy.at(this.tokenSaleRegistry.address);
-      await tokenSaleRegistryToUpgrade.upgradeTo(newTokensaleRegistryImpl.address, {from: owner});
+      await tokenSaleRegistryToUpgrade.upgradeTo(newTokenSaleRegistryImpl.address, {from: owner});
 
-      const newTokensaleVer = await NewWhitelistedTokensaleVer.at(this.tokenSale.address);
-      const newTokensaleRegistryVer = await NewTokensaleRegistryVer.at(this.tokenSaleRegistry.address);
+      const newTokenSaleVer = await NewWhitelistedTokenSaleVer.at(this.tokenSale.address);
+      const newTokenSaleRegistryVer = await NewTokenSaleRegistryVer.at(this.tokenSaleRegistry.address);
 
       //check the new features
-      assert.equal(await newTokensaleVer.getCustomerTokenCount(), '999');
-      await newTokensaleVer.setFoo('foo');
-      assert.equal(await newTokensaleVer.bar(), 'foo');
+      assert.equal(await newTokenSaleVer.getCustomerTokenCount(), '999');
+      await newTokenSaleVer.setFoo('foo');
+      assert.equal(await newTokenSaleVer.bar(), 'foo');
 
-      assert.equal(await newTokensaleRegistryVer.getCustomersWhiteListCount(), '999');
-      await newTokensaleRegistryVer.setRegistryFoo('foo2');
-      assert.equal(await newTokensaleRegistryVer.registryBar(), 'foo2');
+      assert.equal(await newTokenSaleRegistryVer.getCustomersWhiteListCount(), '999');
+      await newTokenSaleRegistryVer.setRegistryFoo('foo2');
+      assert.equal(await newTokenSaleRegistryVer.registryBar(), 'foo2');
 
       // check the previous state
-      assert.equal(await newTokensaleVer.wallet(), wallet);
-      assert.equal(await newTokensaleVer.tokenToSell(), this.mainToken.address);
-      assert.sameMembers(await newTokensaleVer.getCustomerTokenList(), [
+      assert.equal(await newTokenSaleVer.wallet(), wallet);
+      assert.equal(await newTokenSaleVer.tokenToSell(), this.mainToken.address);
+      assert.sameMembers(await newTokenSaleVer.getCustomerTokenList(), [
         this.daiToken.address,
         this.tusdToken.address,
         this.xchfToken.address
       ]);
-      assert.equal(await newTokensaleVer.isTokenAvailable(this.daiToken.address), true);
-      assert.equal(await newTokensaleVer.isTokenAvailable(dan), false);
+      assert.equal(await newTokenSaleVer.isTokenAvailable(this.daiToken.address), true);
+      assert.equal(await newTokenSaleVer.isTokenAvailable(dan), false);
 
-      assert.equal(await newTokensaleRegistryVer.isManager(dan), true);
-      assert.equal(await newTokensaleRegistryVer.isCustomerInWhiteList(bob), true);
-      assert.sameMembers(await newTokensaleRegistryVer.getCustomersWhiteList(), [bob]);
+      assert.equal(await newTokenSaleRegistryVer.isManager(dan), true);
+      assert.equal(await newTokenSaleRegistryVer.isCustomerInWhiteList(bob), true);
+      assert.sameMembers(await newTokenSaleRegistryVer.getCustomersWhiteList(), [bob]);
     });
   });
 });
