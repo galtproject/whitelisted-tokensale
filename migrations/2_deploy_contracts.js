@@ -6,7 +6,6 @@ const path = require('path');
 const { deployWhitelistedTokenSale } = require('../helpers/deploy')(artifacts);
 
 module.exports = function(deployer, network, accounts) {
-
   deployer.then(async () => {
     const owner = '0xB844C65F3E161061bA5D5dD8497B3C04B71c4c83';
     const wallet = '0xB844C65F3E161061bA5D5dD8497B3C04B71c4c83';
@@ -18,7 +17,7 @@ module.exports = function(deployer, network, accounts) {
     await testStableToken1.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
     await testStableToken2.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
 
-    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(mainToken.address, accounts[0], owner);
+    const { tokenSaleRegistry, tokenSale } = await deployWhitelistedTokenSale(mainToken.address, accounts[0], owner);
 
     await tokenSale.addAdmin(accounts[0]);
 
@@ -33,10 +32,7 @@ module.exports = function(deployer, network, accounts) {
 
     await tokenSale.removeAdmin(accounts[0]);
 
-    await Promise.all([
-      tokenSaleRegistry.transferOwnership(owner),
-      tokenSale.transferOwnership(owner)
-    ]);
+    await Promise.all([tokenSaleRegistry.transferOwnership(owner), tokenSale.transferOwnership(owner)]);
 
     const contractsData = {
       mainTokenAddress: mainToken.address,
@@ -53,6 +49,6 @@ module.exports = function(deployer, network, accounts) {
       fs.mkdirSync(deployDirectory);
     }
 
-    fs.writeFileSync(path.join(deployDirectory, network + '.json'), JSON.stringify(contractsData, null, 2));
+    fs.writeFileSync(path.join(deployDirectory, `${network}.json`), JSON.stringify(contractsData, null, 2));
   });
 };

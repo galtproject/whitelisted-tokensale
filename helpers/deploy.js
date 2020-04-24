@@ -1,7 +1,7 @@
 const { contract, web3: ozWeb3 } = require('@openzeppelin/test-environment');
 const { ZWeb3, SimpleProject, Contracts } = require('@openzeppelin/upgrades');
 
-module.exports = function (artifacts) {
+module.exports = function(artifacts) {
   const getContract = artifacts ? artifacts.require.bind(artifacts) : Contracts.getFromLocal.bind(contract);
   const getResultContract = artifacts ? artifacts.require.bind(artifacts) : contract.fromArtifact.bind(contract);
 
@@ -30,5 +30,5 @@ module.exports = function (artifacts) {
         tokenSale: await getResultContract('WhitelistedTokenSale').at(tokenSale._address)
       };
     }
-  }
+  };
 };

@@ -14,13 +14,13 @@ import "../WhitelistedTokenSale.sol";
 
 contract NewWhitelistedTokenSaleVer is WhitelistedTokenSale {
 
-    string public bar;
+  string public bar;
 
-    function getCustomerTokenCount() external view returns(uint256) {
-        return 999;
-    }
+  function getCustomerTokenCount() external view returns (uint256) {
+    return 999;
+  }
 
-    function setFoo(string calldata _bar) external {
-        bar = _bar;
-    }
+  function setFoo(string calldata _bar) external {
+    bar = _bar;
+  }
 }

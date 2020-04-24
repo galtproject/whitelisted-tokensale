@@ -14,13 +14,13 @@ import "../TokenSaleRegistry.sol";
 
 contract NewTokenSaleRegistryVer is TokenSaleRegistry {
 
-    string public registryBar;
+  string public registryBar;
 
-    function getCustomersWhiteListCount() external view returns(uint256) {
-        return 999;
-    }
+  function getCustomersWhiteListCount() external view returns (uint256) {
+    return 999;
+  }
 
-    function setRegistryFoo(string calldata _bar) external {
-        registryBar = _bar;
-    }
+  function setRegistryFoo(string calldata _bar) external {
+    registryBar = _bar;
+  }
 }

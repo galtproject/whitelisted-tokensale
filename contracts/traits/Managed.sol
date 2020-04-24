@@ -14,42 +14,42 @@ import "./Administrated.sol";
 
 contract Managed is Administrated {
 
-    event AddManager(address indexed manager, address indexed admin);
-    event RemoveManager(address indexed manager, address indexed admin);
+  event AddManager(address indexed manager, address indexed admin);
+  event RemoveManager(address indexed manager, address indexed admin);
 
-    using EnumerableSet for EnumerableSet.AddressSet;
+  using EnumerableSet for EnumerableSet.AddressSet;
 
-    EnumerableSet.AddressSet internal managers;
+  EnumerableSet.AddressSet internal managers;
 
-    modifier onlyAdminOrManager() {
-        require(isAdmin(msg.sender) || isManager(msg.sender), "Managered: Msg sender is not admin or manager");
-        _;
-    }
+  modifier onlyAdminOrManager() {
+    require(isAdmin(msg.sender) || isManager(msg.sender), "Managered: Msg sender is not admin or manager");
+    _;
+  }
 
-    modifier onlyManager() {
-        require(isManager(msg.sender), "Managered: Msg sender is not manager");
-        _;
-    }
+  modifier onlyManager() {
+    require(isManager(msg.sender), "Managered: Msg sender is not manager");
+    _;
+  }
 
-    function addManager(address _manager) onlyAdmin external {
-        managers.add(_manager);
-        emit AddManager(_manager, msg.sender);
-    }
+  function addManager(address _manager) external onlyAdmin {
+    managers.add(_manager);
+    emit AddManager(_manager, msg.sender);
+  }
 
-    function removeManager(address _manager) onlyAdmin external {
-        managers.remove(_manager);
-        emit RemoveManager(_manager, msg.sender);
-    }
+  function removeManager(address _manager) external onlyAdmin {
+    managers.remove(_manager);
+    emit RemoveManager(_manager, msg.sender);
+  }
 
-    function isManager(address _manager) public view returns (bool) {
-        return managers.contains(_manager);
-    }
+  function isManager(address _manager) public view returns (bool) {
+    return managers.contains(_manager);
+  }
 
-    function getManagerList() external view returns(address[] memory) {
-        return managers.enumerate();
-    }
+  function getManagerList() external view returns (address[] memory) {
+    return managers.enumerate();
+  }
 
-    function getManagerCount() external view returns(uint256) {
-        return managers.length();
-    }
+  function getManagerCount() external view returns (uint256) {
+    return managers.length();
+  }
 }
