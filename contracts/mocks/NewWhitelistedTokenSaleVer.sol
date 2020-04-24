@@ -9,10 +9,18 @@
 
 pragma solidity ^0.5.13;
 
+import "../WhitelistedTokenSale.sol";
 
-interface ITokenSaleRegistry {
-    event AddWhitelistedCustomer(address indexed customer, address indexed manager);
-    event RemoveWhitelistedCustomer(address indexed customer, address indexed manager);
 
-    function validateWhitelistedCustomer(address _customer) external view;
+contract NewWhitelistedTokenSaleVer is WhitelistedTokenSale {
+
+  string public bar;
+
+  function getCustomerTokenCount() external view returns (uint256) {
+    return 999;
+  }
+
+  function setFoo(string calldata _bar) external {
+    bar = _bar;
+  }
 }

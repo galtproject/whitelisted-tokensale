@@ -23,17 +23,17 @@ contract TokenSaleRegistry is Managed, ITokenSaleRegistry {
     Ownable.initialize(_owner);
   }
 
-  function addCustomerToWhiteList(address _customer) onlyAdminOrManager external {
+  function addCustomerToWhiteList(address _customer) external onlyAdminOrManager {
     customersWhiteList.add(_customer);
     emit AddWhitelistedCustomer(_customer, msg.sender);
   }
 
-  function removeCustomerFromWhiteList(address _customer) onlyAdminOrManager external {
+  function removeCustomerFromWhiteList(address _customer) external onlyAdminOrManager {
     customersWhiteList.remove(_customer);
     emit RemoveWhitelistedCustomer(_customer, msg.sender);
   }
 
-  function isCustomerInWhiteList(address _customer) external view returns(bool) {
+  function isCustomerInWhiteList(address _customer) external view returns (bool) {
     return customersWhiteList.contains(_customer);
   }
 
@@ -41,11 +41,11 @@ contract TokenSaleRegistry is Managed, ITokenSaleRegistry {
     require(customersWhiteList.contains(_customer), "TokenSaleRegistry: Recipient is not in whitelist");
   }
 
-  function getCustomersWhiteList() external view returns(address[] memory) {
+  function getCustomersWhiteList() external view returns (address[] memory) {
     return customersWhiteList.enumerate();
   }
 
-  function getCustomersWhiteListCount() external view returns(uint256) {
+  function getCustomersWhiteListCount() external view returns (uint256) {
     return customersWhiteList.length();
   }
 }

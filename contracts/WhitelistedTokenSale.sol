@@ -49,17 +49,17 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
     tokenSaleRegistry = ITokenSaleRegistry(_tokenSaleRegistry);
   }
 
-  function setTokenSaleRegistry(ITokenSaleRegistry _tokenSaleRegistry) onlyAdmin external {
+  function setTokenSaleRegistry(ITokenSaleRegistry _tokenSaleRegistry) external onlyAdmin {
     tokenSaleRegistry = _tokenSaleRegistry;
     emit SetTokenSaleRegistry(address(_tokenSaleRegistry), msg.sender);
   }
 
-  function setWallet(address _wallet) onlyAdmin external {
+  function setWallet(address _wallet) external onlyAdmin {
     wallet = _wallet;
     emit SetWallet(_wallet, msg.sender);
   }
 
-  function addOrUpdateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) onlyAdmin external {
+  function addOrUpdateCustomerToken(address _token, uint256 _rateMul, uint256 _rateDiv) external onlyAdmin {
     require(_rateMul > 0 && _rateDiv > 0, "WhitelistedTokenSale: incorrect rate");
     customerTokens.add(_token);
     customerTokenInfo[_token].rateMul = _rateMul;
@@ -67,7 +67,7 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
     emit UpdateCustomerToken(_token, _rateMul, _rateDiv, msg.sender);
   }
 
-  function removeCustomerToken(address _token) onlyAdmin external {
+  function removeCustomerToken(address _token) external onlyAdmin {
     customerTokens.remove(_token);
     emit RemoveCustomerToken(_token, msg.sender);
   }
@@ -102,11 +102,11 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
     return customerTokens.contains(_customerToken);
   }
 
-  function getCustomerTokenList() external view returns(address[] memory) {
+  function getCustomerTokenList() external view returns (address[] memory) {
     return customerTokens.enumerate();
   }
 
-  function getCustomerTokenCount() external view returns(uint256) {
+  function getCustomerTokenCount() external view returns (uint256) {
     return customerTokens.length();
   }
 }
