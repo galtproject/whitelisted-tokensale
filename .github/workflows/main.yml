@@ -17,5 +17,6 @@ jobs:
       with:
         node-version: '10.x'
     - name: Run tests
+      run: |
         npm install
         make lint && make compile && npm run test
