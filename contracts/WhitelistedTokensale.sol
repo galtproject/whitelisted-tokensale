@@ -43,10 +43,8 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
   constructor() public {
   }
 
-  function initialize(address _owner, address _tokenToSell, address _tokenSaleRegistry)
-    public
-    initializeWithOwner(_owner)
-  {
+  function initialize(address _owner, address _tokenToSell, address _tokenSaleRegistry) public initializer {
+    Ownable.initialize(_owner);
     tokenToSell = IERC20(_tokenToSell);
     tokenSaleRegistry = ITokenSaleRegistry(_tokenSaleRegistry);
   }

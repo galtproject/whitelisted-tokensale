@@ -1,5 +1,4 @@
 const ERC20Token = artifacts.require('ERC20Token');
-const pIteration = require('p-iteration');
 const web3Utils = require('web3-utils');
 const fs = require('fs');
 const path = require('path');
@@ -19,7 +18,9 @@ module.exports = function(deployer, network, accounts) {
     await testStableToken1.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
     await testStableToken2.mint(owner, web3Utils.toWei((10 ** 6).toString(), 'ether'));
 
-    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(mainToken.address, accounts[0]);
+    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(mainToken.address, accounts[0], owner);
+
+    await tokenSale.addAdmin(accounts[0]);
 
     await Promise.all([
       mainToken.mint(tokenSale.address, web3Utils.toWei((10 ** 6).toString(), 'ether')),
@@ -30,10 +31,7 @@ module.exports = function(deployer, network, accounts) {
       tokenSale.addOrUpdateCustomerToken(testStableToken2.address, '1', '1')
     ]);
 
-    await Promise.all([
-      tokenSaleRegistry.removeAdmin(accounts[0]),
-      tokenSale.removeAdmin(accounts[0])
-    ]);
+    await tokenSale.removeAdmin(accounts[0]);
 
     await Promise.all([
       tokenSaleRegistry.transferOwnership(owner),

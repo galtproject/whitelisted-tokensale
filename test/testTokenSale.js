@@ -4,7 +4,7 @@ const {assert} = require('chai');
 const MintableErc20Token = contract.fromArtifact('ERC20Mintable');
 const NewTokenSaleRegistryVer = contract.fromArtifact('NewTokenSaleRegistryVer');
 const NewWhitelistedTokenSaleVer = contract.fromArtifact('NewWhitelistedTokenSaleVer');
-const OwnedUpgradeabilityProxy = contract.fromArtifact('OwnedUpgradeabilityProxy');
+const BaseAdminUpgradeabilityProxy = contract.fromArtifact('BaseAdminUpgradeabilityProxy');
 
 const {ether, assertRevert} = require('@galtproject/solidity-test-chest')(web3);
 
@@ -16,7 +16,7 @@ MintableErc20Token.numberFormat = 'String';
 // const bytes32 = utf8ToHex;
 
 describe('WhitelistedTokenSale', () => {
-  const [owner, bob, charlie, dan, wallet, alice] = accounts;
+  const [owner, proxyAdmin, bob, charlie, dan, wallet, alice] = accounts;
 
   beforeEach(async function () {
     this.mainToken = await MintableErc20Token.new();
@@ -34,11 +34,14 @@ describe('WhitelistedTokenSale', () => {
     await this.xchfToken.mint(bob, ether(1000));
     await this.xchfToken.mint(dan, ether(1000));
 
-    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(this.mainToken.address, owner);
+    const {tokenSaleRegistry, tokenSale} = await deployWhitelistedTokenSale(this.mainToken.address, owner, proxyAdmin);
     this.tokenSaleRegistry = tokenSaleRegistry;
     this.tokenSale = tokenSale;
 
     await this.mainToken.mint(this.tokenSale.address, ether(1000));
+
+    await this.tokenSale.addAdmin(owner, {from: owner});
+    await this.tokenSaleRegistry.addAdmin(owner, {from: owner});
 
     await this.tokenSale.setWallet(wallet, {from: owner});
 
@@ -49,9 +52,6 @@ describe('WhitelistedTokenSale', () => {
 
   describe('initiate', () => {
     it('should initialized successfully', async function () {
-      assert.equal(await this.tokenSaleRegistry.initialized(), true);
-      assert.equal(await this.tokenSale.initialized(), true);
-
       assert.equal(await this.tokenSaleRegistry.isAdmin(owner), true);
       assert.equal(await this.tokenSaleRegistry.owner(), owner);
       assert.equal(await this.tokenSale.isAdmin(owner), true);
@@ -113,11 +113,11 @@ describe('WhitelistedTokenSale', () => {
 
       await assertRevert(
         this.tokenSaleRegistry.addAdmin(alice, {from: dan}),
-        'Ownable: caller is not the owner'
+        'revert'
       );
       await assertRevert(
         this.tokenSaleRegistry.removeAdmin(alice, {from: dan}),
-        'Ownable: caller is not the owner'
+        'revert'
       );
 
       assert.equal(await this.tokenSaleRegistry.isAdmin(dan), true);
@@ -316,11 +316,11 @@ describe('WhitelistedTokenSale', () => {
       await newTokenSaleImpl.initialize(owner, owner, owner, {from: owner});
       await newTokenSaleRegistryImpl.initialize(owner, {from: owner});
 
-      const tokenSaleToUpgrade = await OwnedUpgradeabilityProxy.at(this.tokenSale.address);
-      await tokenSaleToUpgrade.upgradeTo(newTokenSaleImpl.address, {from: owner});
+      const tokenSaleToUpgrade = await BaseAdminUpgradeabilityProxy.at(this.tokenSale.address);
+      await tokenSaleToUpgrade.upgradeTo(newTokenSaleImpl.address, {from: proxyAdmin});
 
-      const tokenSaleRegistryToUpgrade = await OwnedUpgradeabilityProxy.at(this.tokenSaleRegistry.address);
-      await tokenSaleRegistryToUpgrade.upgradeTo(newTokenSaleRegistryImpl.address, {from: owner});
+      const tokenSaleRegistryToUpgrade = await BaseAdminUpgradeabilityProxy.at(this.tokenSaleRegistry.address);
+      await tokenSaleRegistryToUpgrade.upgradeTo(newTokenSaleRegistryImpl.address, {from: proxyAdmin});
 
       const newTokenSaleVer = await NewWhitelistedTokenSaleVer.at(this.tokenSale.address);
       const newTokenSaleRegistryVer = await NewTokenSaleRegistryVer.at(this.tokenSaleRegistry.address);

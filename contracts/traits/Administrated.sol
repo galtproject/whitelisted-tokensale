@@ -10,10 +10,11 @@
 pragma solidity ^0.5.13;
 
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "@galtproject/libs/contracts/traits/OwnableAndInitializable.sol";
 
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
-contract Administrated is OwnableAndInitializable {
+contract Administrated is Initializable, Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event AddAdmin(address indexed admin);

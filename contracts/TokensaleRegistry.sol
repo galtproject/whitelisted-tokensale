@@ -19,8 +19,8 @@ contract TokenSaleRegistry is Managed, ITokenSaleRegistry {
 
   EnumerableSet.AddressSet internal customersWhiteList;
 
-  function initialize(address _owner) external initializeWithOwner(_owner) {
-
+  function initialize(address _owner) public initializer {
+    Ownable.initialize(_owner);
   }
 
   function addCustomerToWhiteList(address _customer) onlyAdminOrManager external {
