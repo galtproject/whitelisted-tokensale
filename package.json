@@ -8,7 +8,6 @@
   "devDependencies": {
     "@galtproject/eslint-config-galt": "^1.1.0",
     "@galtproject/solidity-test-chest": "https://github.com/galtproject/solidity-test-chest#605d332",
-    "@galtproject/libs": "git+ssh://git@github.com/galtproject/galtproject-libs.git#c99391e",
     "@openzeppelin/contracts": "2.5.0",
     "@openzeppelin/test-environment": "^0.1.2",
     "@truffle/hdwallet-provider": "^1.0.32",
@@ -38,6 +37,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@openzeppelin/contracts-ethereum-package": "^2.2.3",
+    "@openzeppelin/upgrades": "^2.8.0",
     "p-iteration": "^1.1.8"
   }
 }
