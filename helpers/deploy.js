@@ -22,7 +22,7 @@ module.exports = function(artifacts) {
         admin: proxyAdmin
       });
       const tokenSale = await tokenSaleProject.createProxy(WhitelistedTokenSale, {
-        initArgs: [from, _tokenToSell, tokenSaleRegistry.address],
+        initArgs: [from, _tokenToSell, tokenSaleRegistry.address, true],
         admin: proxyAdmin
       });
       return {
