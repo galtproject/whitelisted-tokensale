@@ -28,6 +28,7 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
 
   IERC20 public tokenToSell;
   ITokenSaleRegistry public tokenSaleRegistry;
+  bool public whitelistEnabled;
 
   address public wallet;
 
@@ -43,15 +44,17 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
   constructor() public {
   }
 
-  function initialize(address _owner, address _tokenToSell, address _tokenSaleRegistry) public initializer {
+  function initialize(address _owner, address _tokenToSell, address _tokenSaleRegistry, bool _whitelistEnabled) public initializer {
     Ownable.initialize(_owner);
     tokenToSell = IERC20(_tokenToSell);
     tokenSaleRegistry = ITokenSaleRegistry(_tokenSaleRegistry);
+    whitelistEnabled = _whitelistEnabled;
   }
 
-  function setTokenSaleRegistry(ITokenSaleRegistry _tokenSaleRegistry) external onlyAdmin {
+  function setTokenSaleRegistry(ITokenSaleRegistry _tokenSaleRegistry, bool _whitelistEnabled) external onlyAdmin {
     tokenSaleRegistry = _tokenSaleRegistry;
-    emit SetTokenSaleRegistry(address(_tokenSaleRegistry), msg.sender);
+    whitelistEnabled = _whitelistEnabled;
+    emit SetTokenSaleRegistry(address(_tokenSaleRegistry), msg.sender, _whitelistEnabled);
   }
 
   function setWallet(address _wallet) external onlyAdmin {
@@ -77,7 +80,9 @@ contract WhitelistedTokenSale is Administrated, IWhitelistedTokenSale, Pausable 
     require(_weiAmount > 0, "WhitelistedTokenSale: weiAmount can't be null");
     require(isTokenAvailable(address(_customerToken)), "WhitelistedTokenSale: _customerToken is not available");
 
-    tokenSaleRegistry.validateWhitelistedCustomer(_customerAddress);
+    if (whitelistEnabled) {
+      tokenSaleRegistry.validateWhitelistedCustomer(_customerAddress);
+    }
 
     uint256 _resultTokenAmount = getTokenAmount(address(_customerToken), _weiAmount);
     require(_resultTokenAmount > 0, "WhitelistedTokenSale: _resultTokenAmount can't be null");
