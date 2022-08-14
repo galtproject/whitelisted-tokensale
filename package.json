@@ -8,7 +8,7 @@
   "devDependencies": {
     "@galtproject/eslint-config-galt": "^1.1.0",
     "@galtproject/solidity-test-chest": "https://github.com/galtproject/solidity-test-chest#605d332",
-    "@openzeppelin/contracts": "2.5.0",
+    "@openzeppelin/contracts": "4.7.2",
     "@openzeppelin/test-environment": "^0.1.2",
     "@truffle/hdwallet-provider": "^1.0.32",
     "chai": "^4.2.0",
